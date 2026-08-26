@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>GIO // GIOGOTCHI V.9</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#00ff66">
+</head>
+<body id="bodyRoot">
+
+  <div class="device">
+    <div class="brand-container">
+      <div class="brand-tag">GIO // GIOGOTCHI</div>
+      <div class="top-controls">
+        <button class="theme-selector" onclick="playBeep(600, 'sine', 0.05); cycleTheme();" id="themeNameBtn">Neón: Acid</button>
+      </div>
+    </div>
+
+    <!-- Pantalla LCD -->
+    <div class="lcd-screen">
+      <div class="status-row">
+        <span id="lcdClock">00:00:00</span>
+        <span id="lcdStreak">🌿 D1</span>
+      </div>
+
+      <div class="avatar-container" onclick="playBeep(500, 'square', 0.05); cycleAvatarExpression();" title="Clic para cambiar expresión">
+        <div class="pixel-avatar" id="pixelAvatar">
+          <div class="av-cap"></div>
+          <div class="ear-plug-left"></div>
+          <div class="ear-plug-right"></div>
+          <div class="av-face" id="avFace">^‿^</div>
+        </div>
+        <div id="avatarStatusText" class="avatar-status-text">INICIALIZADO</div>
+      </div>
+
+      <div class="lcd-meters">
+        <div>
+          <span>PROGRESO DÍA</span>
+          <div class="meter-bar"><div id="dayFill" class="meter-fill" style="width: 50%;"></div></div>
+        </div>
+        <div>
+          <span>ESTADO ACTUAL</span>
+          <div style="font-size:0.44rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--lcd-dark); font-weight:900;" id="lcdBadge">MODO ACTIVO</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pestañas -->
+    <div class="device-buttons">
+      <button class="pill-btn active" onclick="playBeep(500, 'triangle', 0.04); switchTab('ganja', this)">Ganja🌿</button>
+      <button class="pill-btn" onclick="playBeep(500, 'triangle', 0.04); switchTab('schedule', this)">Bloques⏰</button>
+      <button class="pill-btn" onclick="playBeep(500, 'triangle', 0.04); switchTab('tasks', this)">Hogar🏠</button>
+      <button class="pill-btn" onclick="playBeep(500, 'triangle', 0.04); switchTab('pet', this)">Miclo🐶</button>
+      <button class="pill-btn" onclick="playBeep(500, 'triangle', 0.04); switchTab('fitness', this)">Ejercicio🏋️</button>
+      <button class="pill-btn" onclick="playBeep(500, 'triangle', 0.04); switchTab('finances', this)">Dinero💳</button>
+      <button class="pill-btn" onclick="playBeep(500, 'triangle', 0.04); switchTab('scratchpad', this)">Notas📝</button>
+      <button class="pill-btn" onclick="playBeep(500, 'triangle', 0.04); switchTab('voice', this)">Robot🗣️</button>
+    </div>
+
+    <!-- Paneles -->
+    <div class="control-panel">
+      
+      <!-- Ganja -->
+      <div id="tab-ganja" class="panel-view active">
+        <div class="sec-title">Regulador // Ganja</div>
+        <div class="timer-box">
+          <div style="font-size: 0.5rem; color: var(--dim);">TIEMPO DESDE EL ÚLTIMO GALLO:</div>
+          <div class="timer-display" id="ganjaTimer">00h 00m 00s</div>
+          <button class="btn-reset-timer" onclick="resetGanjaTimer()">[ Acabo de fumar el último ]</button>
+        </div>
+        <div id="ganjaList" class="list-container" style="max-height: 65px;"></div>
+        <div class="input-row">
+          <input type="text" id="ganjaInput" placeholder="Meta o nota de consumo...">
+          <button class="btn-add" onclick="playBeep(700, 'sine', 0.05); addGanjaPlan()">+</button>
+        </div>
+      </div>
+
+      <!-- Bloques -->
+      <div id="tab-schedule" class="panel-view">
+        <div class="sec-title">Bloques del Día</div>
+        <div id="scheduleList" class="list-container"></div>
+        <div class="input-row">
+          <input type="text" id="schedInput" placeholder="Ej: Trabajo / Código...">
+          <button class="btn-add" onclick="playBeep(700, 'sine', 0.05); addSchedule()">+</button>
+        </div>
+      </div>
+
+      <!-- Hogar -->
+      <div id="tab-tasks" class="panel-view">
+        <div class="sec-title">Hogar & Cocina</div>
+        <div id="taskList" class="list-container"></div>
+        <div class="input-row">
+          <input type="text" id="taskInput" placeholder="Ej: Ordenar espacio...">
+          <button class="btn-add" onclick="playBeep(700, 'sine', 0.05); addTask()">+</button>
+        </div>
+      </div>
+
+      <!-- Miclo -->
+      <div id="tab-pet" class="panel-view">
+        <div class="sec-title">Cuidados de Miclo 🐶</div>
+        <div id="petList" class="list-container"></div>
+        <div class="input-row">
+          <input type="text" id="petInput" placeholder="Ej: Comida, paseo, vet...">
+          <button class="btn-add" onclick="playBeep(700, 'sine', 0.05); addPetTask()">+</button>
+        </div>
+      </div>
+
+      <!-- Ejercicio -->
+      <div id="tab-fitness" class="panel-view">
+        <div class="sec-title">Ejercicio & Fuerza</div>
+        <div id="fitnessList" class="list-container"></div>
+        <div class="input-row">
+          <input type="text" id="fitnessInput" placeholder="Ej: Rutina física...">
+          <button class="btn-add" onclick="playBeep(700, 'sine', 0.05); addFitness()">+</button>
+        </div>
+      </div>
+
+      <!-- Dinero -->
+      <div id="tab-finances" class="panel-view">
+        <div class="sec-title">Gastos & Deudas</div>
+        <div id="financeList" class="list-container"></div>
+        <div class="input-row">
+          <input type="text" id="finDesc" placeholder="Concepto" style="flex: 1.5;">
+          <input type="number" id="finAmount" placeholder="$ Monto" style="flex: 1;">
+          <button class="btn-add" onclick="playBeep(700, 'sine', 0.05); addFinance()">+</button>
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <div id="tab-scratchpad" class="panel-view">
+        <div class="sec-title">Notas de Código e Ideas 📝</div>
+        <textarea id="scratchpadArea" placeholder="Escribe fragmentos de código, ideas o pendientes rápidos aquí..." oninput="saveScratchpad()"></textarea>
+      </div>
+
+      <!-- Robot -->
+      <div id="tab-voice" class="panel-view">
+        <div class="sec-title">Sintetizador Robótico 🗣️</div>
+        <div style="font-size: 0.58rem; color: var(--dim); margin-bottom: 8px; line-height: 1.3;">
+          El mini-yo te hablará con voz sintética al completar tareas:
+        </div>
+        <div class="input-row" style="margin-bottom: 8px;">
+          <input type="text" id="voiceTestInput" value="Sistema operando al máximo rendimiento, Gio.">
+          <button class="btn-add" onclick="speakRobot(document.getElementById('voiceTestInput').value)">Test</button>
+        </div>
+        <div style="font-size: 0.52rem; color: var(--neon-blue); text-align: center; margin-top: 15px;">
+          Estado de Voz: <span id="voiceStatus">Activo / WebSpeech</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="reset-footer">
+      <button class="link-reset" onclick="resetDevice()">[ Reiniciar Sistema ]</button>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
