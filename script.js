@@ -48,6 +48,8 @@ let manualFaceIndex = localStorage.getItem("gio_v9_face") !== null ? Number(loca
 let startDate = localStorage.getItem("gio_v9_start") || new Date().toISOString();
 localStorage.setItem("gio_v9_start", startDate);
 
+let isRelaxActive = localStorage.getItem("gio_v9_relax") === "true";
+
 const faces = [
   { face: "^‿^", text: "SISTEMA ÓPTIMO" },
   { face: "¬‿¬", text: "RITMO ACTIVO" },
@@ -55,17 +57,46 @@ const faces = [
   { face: "ò_ó", text: "MODO GUERRERO" }
 ];
 
+const relaxFaces = [
+  { face: "u_u", text: "MODO ZEN // RELAX" },
+  { face: "-_-", text: "RESPIRACIÓN PAUSADA" }
+];
+
 function applySettings() {
   let body = document.getElementById("bodyRoot");
   body.className = "";
-  body.classList.add("theme-" + themes[currentThemeIdx].id);
+  
+  if (isRelaxActive) {
+    body.classList.add("relax-mode");
+    document.getElementById("relaxModeBtn").innerText = "⚡ Cyber";
+    document.getElementById("relaxModeBtn").style.borderColor = "var(--neon-pink)";
+    document.getElementById("relaxModeBtn").style.color = "var(--neon-pink)";
+  } else {
+    body.classList.add("theme-" + themes[currentThemeIdx].id);
+    document.getElementById("relaxModeBtn").innerText = "🍃 Relax";
+    document.getElementById("relaxModeBtn").style.borderColor = "var(--neon-blue)";
+    document.getElementById("relaxModeBtn").style.color = "var(--neon-blue)";
+  }
   document.getElementById("themeNameBtn").innerText = themes[currentThemeIdx].name;
 }
 
 function cycleTheme() {
+  if (isRelaxActive) return; // Si está en relax, primero sale del modo relax o alterna normal
   currentThemeIdx = (currentThemeIdx + 1) % themes.length;
   localStorage.setItem("gio_v9_themeIdx", currentThemeIdx);
   applySettings();
+}
+
+function toggleRelaxMode() {
+  isRelaxActive = !isRelaxActive;
+  localStorage.setItem("gio_v9_relax", isRelaxActive);
+  if (isRelaxActive) {
+    speakRobot("Activando frecuencia zen. Tomá un respiro, Gio.");
+  } else {
+    speakRobot("Regresando a sistemas activos.");
+  }
+  applySettings();
+  updateApp();
 }
 
 function cycleAvatarExpression() {
@@ -119,17 +150,24 @@ function updateApp() {
   let dayPct = totalItems > 0 ? Math.round((totalDone / totalItems) * 100) : 100;
 
   document.getElementById("dayFill").style.width = dayPct + "%";
-  document.getElementById("lcdBadge").innerText = dayPct >= 70 ? "ENFOQUE AL TOPE" : "MODO ACTIVO";
-
+  
   let avFace = document.getElementById("avFace");
   let avText = document.getElementById("avatarStatusText");
-  if (manualFaceIndex !== -1) {
-    avFace.innerText = faces[manualFaceIndex].face;
-    avText.innerText = faces[manualFaceIndex].text;
+
+  if (isRelaxActive) {
+    document.getElementById("lcdBadge").innerText = "MODO ZEN // RELAX";
+    avFace.innerText = "u_u";
+    avText.innerText = "TRANQUILIDAD TOTAL";
   } else {
-    if (dayPct >= 75) { avFace.innerText = "^‿^"; avText.innerText = "SISTEMA ÓPTIMO"; }
-    else if (dayPct >= 40) { avFace.innerText = "¬‿¬"; avText.innerText = "RITMO ACTIVO"; }
-    else { avFace.innerText = "•_•;"; avText.innerText = "ENFOQUE TOTAL"; }
+    document.getElementById("lcdBadge").innerText = dayPct >= 70 ? "ENFOQUE AL TOPE" : "MODO ACTIVO";
+    if (manualFaceIndex !== -1) {
+      avFace.innerText = faces[manualFaceIndex].face;
+      avText.innerText = faces[manualFaceIndex].text;
+    } else {
+      if (dayPct >= 75) { avFace.innerText = "^‿^"; avText.innerText = "SISTEMA ÓPTIMO"; }
+      else if (dayPct >= 40) { avFace.innerText = "¬‿¬"; avText.innerText = "RITMO ACTIVO"; }
+      else { avFace.innerText = "•_•;"; avText.innerText = "ENFOQUE TOTAL"; }
+    }
   }
 
   renderList("ganjaList", ganjaPlans, "toggleGanja", "deleteGanja");
